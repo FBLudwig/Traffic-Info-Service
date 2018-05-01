@@ -1,6 +1,5 @@
-import os 
+import os
 import glob
-import vigra
 import numpy as np
 import scipy.io
 from skimage.transform import resize
@@ -77,11 +76,11 @@ def cartesian(arrays, out=None):
     if out is None:
         out = np.zeros([n, len(arrays)], dtype=dtype)
 
-    m = n / arrays[0].size
+    m = n // arrays[0].size
     out[:,0] = np.repeat(arrays[0], m)
     if arrays[1:]:
         cartesian(arrays[1:], out=out[0:m,1:])
-        for j in xrange(1, arrays[0].size):
+        for j in range(1, arrays[0].size):
             out[j*m:(j+1)*m,1:] = out[0:m,1:]
     return out
 
@@ -95,13 +94,13 @@ def get_dense_pos(heith, width, pw, stride = 1):
     @return: returns a list with the patches positions.
     '''    
     # Compute patch halfs
-    dx=dy=pw/2
+    dx=dy=pw//2
     # Create a combination which corresponds to all the points of a dense
-    # extraction     
-    pos = cartesian( (range(dx, heith - dx, stride), range(dy, width -dy, stride) ) )
+    # extraction
+    pos = cartesian( (list(range(dx, heith - dx, stride)), list(range(dy, width -dy, stride)) ) )
 #    return pos
-    bot_line = cartesian( (heith - dx -1, range(dy, width -dy, stride) ) )
-    right_line = cartesian( (range(dx, heith - dx, stride), width -dy - 1) )
+    bot_line = cartesian( (heith - dx -1, list(range(dy, width -dy, stride)) ) )
+    right_line = cartesian( (list(range(dx, heith - dx, stride)), width -dy - 1) )
     return np.vstack( (pos, bot_line, right_line) )
 
 
@@ -274,7 +273,7 @@ def importImagesFolder(im_names, skip=1, stop=-1, verbose=True):
     count = 0
     imgs = []
     for name in im_names[::skip]:
-        if verbose: print name
+        if verbose: print(name)
         img = vigra.impex.readImage(name).view(np.ndarray).swapaxes(0, 1).squeeze()
         imgs.append(img)
         count += 1

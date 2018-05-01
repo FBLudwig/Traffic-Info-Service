@@ -66,7 +66,7 @@ class CaffePredictor:
         # Iterate for all patches
         for ix, p in enumerate(pos):
             # Compute displacement from centers
-            dx=dy=int(base_pw/2)
+            dx=dy=int(base_pw//2)
     
             # Get roi
             x,y=p
@@ -88,7 +88,7 @@ class CaffePredictor:
             
             # Take the output from the last layer
             # Access to the last layer of the net, second element of the tuple (layer, caffe obj)
-            pred = self.net.blobs.items()[-1][1].data
+            pred = list(self.net.blobs.items())[-1][1].data
             
             # Make it squared
             p_side = int(np.sqrt( len( pred.flatten() ) )) 
@@ -106,7 +106,7 @@ class CaffePredictor:
         count_map[ count_map == 0 ] = 1
 
         # Average density map
-        dens_map = dens_map / count_map        
+        dens_map = dens_map // count_map
         
         return dens_map
         
@@ -130,8 +130,8 @@ def gameRec(test, gt, cur_lvl, tar_lvl):
     else:
 
         # Creating the four slices
-        y_half = int( dim[0]/2 )
-        x_half = int( dim[1]/2 )
+        y_half = int( dim[0]//2 )
+        x_half = int( dim[1]//2 )
         
         dens_slice = []
         dens_slice.append( test[ 0:y_half, 0:x_half ] )
@@ -228,18 +228,18 @@ def initTestFromCfg(cfg_file):
 
 
 def dispHelp(arg0):
-    print "======================================================"
-    print "                       Usage"
-    print "======================================================"
-    print "\t-h display this message"
-    print "\t--cpu_only"
-    print "\t--tdev <GPU ID>"
-    print "\t--prototxt <caffe prototxt file>"
-    print "\t--caffemodel <caffe caffemodel file>"
-    print "\t--cfg <config file yaml>"
+    print("======================================================")
+    print("                       Usage")
+    print("======================================================")
+    print("\t-h display this message")
+    print("\t--cpu_only")
+    print("\t--tdev <GPU ID>")
+    print("\t--prototxt <caffe prototxt file>")
+    print("\t--caffemodel <caffe caffemodel file>")
+    print("\t--cfg <config file yaml>")
 
 def main(argv):
-    print "TEST: Python version: " + (sys.version) # Delete this line
+    print("TEST: Python version: " + (sys.version)) # Delete this line
     # Init parameters      
     use_cpu = False
     gpu_dev = 0
@@ -260,7 +260,7 @@ def main(argv):
         opts, _ = getopt.getopt(argv, "h:", ["prototxt=", "caffemodel=", 
                                              "cpu_only", "dev=", "cfg="])
     except getopt.GetoptError as err:
-        print "Error while parsing parameters: ", err
+        print("Error while parsing parameters: ", err)
         dispHelp(argv[0])
         return
     
@@ -279,36 +279,36 @@ def main(argv):
         elif opt in ("--cfg"):
             cfg_file = arg
             
-    print "Loading configuration file: ", cfg_file
+    print("Loading configuration file: ", cfg_file)
     (dataset, use_mask, mask_file, test_names_file, im_folder, 
             dot_ending, pw, sigmadots, n_scales, perspective_path, 
             use_perspective, is_colored, results_file, resize_im) = initTestFromCfg(cfg_file)
             
-    print "Choosen parameters:"
-    print "-------------------"
-    print "Use only CPU: ", use_cpu
-    print "GPU devide: ", gpu_dev
-    print "Dataset: ", dataset
-    print "Results files: ", results_file
-    print "Test data base location: ", im_folder
-    print "Test inmage names: ", test_names_file
-    print "Dot image ending: ", dot_ending
-    print "Use mask: ", use_mask
-    print "Mask pattern: ", mask_file
-    print "Patch width (pw): ", pw
-    print "Sigma for each dot: ", sigmadots
-    print "Number of scales: ", n_scales
-    print "Perspective map: ", perspective_path
-    print "Use perspective:", use_perspective
-    print "Prototxt path: ", prototxt_path
-    print "Caffemodel path: ", caffemodel_path
-    print "Batch size: ", b_size
-    print "Resize images: ", resize_im
-    print "==================="
+    print("Choosen parameters:")
+    print("-------------------")
+    print("Use only CPU: ", use_cpu)
+    print("GPU devide: ", gpu_dev)
+    print("Dataset: ", dataset)
+    print("Results files: ", results_file)
+    print("Test data base location: ", im_folder)
+    print("Test inmage names: ", test_names_file)
+    print("Dot image ending: ", dot_ending)
+    print("Use mask: ", use_mask)
+    print("Mask pattern: ", mask_file)
+    print("Patch width (pw): ", pw)
+    print("Sigma for each dot: ", sigmadots)
+    print("Number of scales: ", n_scales)
+    print("Perspective map: ", perspective_path)
+    print("Use perspective:", use_perspective)
+    print("Prototxt path: ", prototxt_path)
+    print("Caffemodel path: ", caffemodel_path)
+    print("Batch size: ", b_size)
+    print("Resize images: ", resize_im)
+    print("===================")
     
-    print "----------------------"
-    print "Preparing for Testing"
-    print "======================"
+    print("----------------------")
+    print("Preparing for Testing")
+    print("======================")
 
     # Set GPU CPU setting
     if use_cpu:
@@ -318,7 +318,7 @@ def main(argv):
         caffe.set_device(gpu_dev)
         caffe.set_mode_gpu()
 
-    print "Reading perspective file"
+    print("Reading perspective file")
     if use_perspective:
         pers_file = h5py.File(perspective_path,'r')
         pmap = np.array( pers_file['pmap'] )
@@ -326,13 +326,13 @@ def main(argv):
         
     mask = None
     if dataset == 'UCSD':
-        print "Reading mask"
+        print("Reading mask")
         if use_mask:
             mask_f = h5py.File(mask_file,'r')
             mask = np.array(mask_f['mask'])
             mask_f.close()
     
-    print "Reading image file names:"
+    print("Reading image file names:")
     im_names = np.loadtxt(test_names_file, dtype='str')
 
     # Perform test
@@ -346,8 +346,8 @@ def main(argv):
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
     
-    print 
-    print "Start prediction ..."
+    print() 
+    print("Start prediction ...")
     count = 0
     # gt_vector = np.zeros((len(im_names)))
     pred_vector = np.zeros((len(im_names)))    
@@ -385,7 +385,7 @@ def main(argv):
         # ntrue,npred,resImg,gtdots=testOnImg(CNN, im, dens_im, pw, mask)
         npred,resImg=testOnImg(CNN, im, pw, mask)
         # print "image : %d , ntrue = %.2f ,npred = %.2f , time =%.2f sec"%(count,ntrue,npred,time.time()-s)
-        print "image : %d, npred = %.2f , time =%.2f sec"%(count,npred,time.time()-s)
+        print("image : %d, npred = %.2f , time =%.2f sec"%(count,npred,time.time()-s))
 
         # Keep individual predictions
         # gt_vector[ix] = ntrue
