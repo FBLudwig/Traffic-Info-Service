@@ -66,7 +66,7 @@ class CaffePredictor:
         # Iterate for all patches
         for ix, p in enumerate(pos):
             # Compute displacement from centers
-            dx=dy=int(base_pw//2)
+            dx=dy=int(base_pw/2)
     
             # Get roi
             x,y=p
@@ -106,7 +106,7 @@ class CaffePredictor:
         count_map[ count_map == 0 ] = 1
 
         # Average density map
-        dens_map = dens_map // count_map
+        dens_map = dens_map / count_map
         
         return dens_map
         
@@ -130,8 +130,8 @@ def gameRec(test, gt, cur_lvl, tar_lvl):
     else:
 
         # Creating the four slices
-        y_half = int( dim[0]//2 )
-        x_half = int( dim[1]//2 )
+        y_half = int( dim[0]/2 )
+        x_half = int( dim[1]/2 )
         
         dens_slice = []
         dens_slice.append( test[ 0:y_half, 0:x_half ] )
@@ -227,7 +227,7 @@ def initTestFromCfg(cfg_file):
             use_perspective, is_colored, results_file, resize_im)
 
 
-def dispHelp(arg0):
+def dispHelp():
     print("======================================================")
     print("                       Usage")
     print("======================================================")
@@ -239,8 +239,7 @@ def dispHelp(arg0):
     print("\t--cfg <config file yaml>")
 
 def main(argv):
-    print("TEST: Python version: " + (sys.version)) # Delete this line
-    # Init parameters      
+    # Init parameters
     use_cpu = False
     gpu_dev = 0
 
