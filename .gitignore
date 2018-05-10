@@ -1,5 +1,4 @@
 .idea
 *.pyc
 data
-pretrained_models
 venv
