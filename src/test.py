@@ -239,7 +239,7 @@ def dispHelp():
     print("\t--caffemodel <caffe caffemodel file>")
     print("\t--cfg <config file yaml>")
 
-def main(argv):
+def main(argv, image_name):
     # Init parameters
     use_cpu = False
     gpu_dev = 0
@@ -321,58 +321,37 @@ def main(argv):
         pers_file.close()
         
     mask = None
-    if dataset == 'UCSD':
-        print("Reading mask")
-        if use_mask:
-            mask_f = h5py.File(mask_file,'r')
-            mask = np.array(mask_f['mask'])
-            mask_f.close()
-    
+
     print("Reading image file names:")
     im_names = np.loadtxt(test_names_file, dtype='str')
 
-    # Perform test
-    npredall=[]
-    
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
     
     print() 
     print("Start prediction ...")
-    count = 0
-    pred_vector = np.zeros((len(im_names)))    
-    
-    for ix, name in enumerate(im_names):
-        # Get image paths
-        im_path = utl.extendName(name, im_folder)
 
-        # Read image files
-        im = loadImage(im_path, color = is_colored)
-        
-        if resize_im > 0:
-            # Resize image
-            im = utl.resizeMaxSize(im, resize_im)
-        
-        # Get mask if needed
-        if dataset != 'UCSD':
-            if use_mask:
-                mask_im_path = utl.extendName(name, im_folder, use_ending=True, pattern=mask_file)
-                mask = sio.loadmat(mask_im_path, chars_as_strings=1, matlab_compatible=1)
-                mask = mask.get('BW')
-        
-        s=time.time()
-        npred,resImg=testOnImg(CNN, im, pw, mask)
-        print("image : %d, npred = %.2f , time =%.2f sec"%(count,npred,time.time()-s))
+    # Get image paths
+    im_path = utl.extendName(image_name, im_folder)
 
-        # Keep individual predictions
-        pred_vector[ix] = npred    
-    
-        # Hold predictions and originals
-        npredall.append(npred)
-    
-        count = count +1
+    # Read image files
+    im = loadImage(im_path, color = is_colored)
 
-    return 0
+    if resize_im > 0:
+        # Resize image
+        im = utl.resizeMaxSize(im, resize_im)
+
+    # Get mask if needed
+    if use_mask:
+        mask_im_path = utl.extendName(image_name, im_folder, use_ending=True, pattern=mask_file)
+        mask = sio.loadmat(mask_im_path, chars_as_strings=1, matlab_compatible=1)
+        mask = mask.get('BW')
+
+    s=time.time()
+    npred,resImg=testOnImg(CNN, im, pw, mask)
+    print("image : %s, npred = %.2f , time =%.2f sec" % (image_name, npred, time.time() - s))
+
+    return npred
 
 if __name__=="__main__":
-    main(sys.argv[1:])
+    main(sys.argv[1:], "Ettlingen-A.jpg")
