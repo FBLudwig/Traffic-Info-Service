@@ -3,6 +3,7 @@
 
 import getopt
 # System
+import os
 import signal
 import sys
 
@@ -20,6 +21,7 @@ import time
 import numpy as np
 import utils as utl
 from gen_features import loadImage, extractEscales
+os.environ['GLOG_minloglevel'] = '2'    # Supress most of caffe's log output
 import caffe
 
 
@@ -30,7 +32,7 @@ class CaffePredictor:
     def __init__(self, prototxt, caffemodel, n_scales):       
         # Load a precomputed caffe model
         self.net = caffe.Net(prototxt, caffemodel, caffe.TEST)
-        
+
         # input preprocessing: 'data' is the name of the input blob == net.inputs[0]
         self.transformer = caffe.io.Transformer({'data': self.net.blobs['data_s0'].data.shape})
         self.transformer.set_transpose('data', (2, 0, 1)) # It's already RGB
@@ -237,15 +239,13 @@ def main(argv, image_name):
         caffe.set_device(gpu_dev)
         caffe.set_mode_gpu()
 
-    print("Reading perspective file")
     if use_perspective:
         pers_file = h5py.File(perspective_path,'r')
         pers_file.close()
         
-
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
-    
+
     print() 
     print("Start prediction ...")
 
