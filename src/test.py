@@ -14,25 +14,26 @@ Test script. This code performs a test over with a pre trained model over the
 specified dataset.
 """
 
-#===========================================================================
+import getopt
+# System
+import signal
+import sys
+
+# ===========================================================================
 # Dependency loading
-#===========================================================================
+# ===========================================================================
 # File storage
 import h5py
 import scipy.io as sio
 
-# System
-import signal
-import sys, getopt
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 import time
 
 # Vision and maths
 import numpy as np
 import utils as utl
-from gen_features import genDensity, genPDensity, loadImage, extractEscales
+from gen_features import loadImage, extractEscales
 import caffe
-import cv2
 
 
 #===========================================================================
@@ -243,9 +244,6 @@ def main(argv):
     use_cpu = False
     gpu_dev = 0
 
-    # GAME max level
-    mx_game = 4 # Max game target
-
     # Batch size
     b_size = -1
 
@@ -320,7 +318,6 @@ def main(argv):
     print("Reading perspective file")
     if use_perspective:
         pers_file = h5py.File(perspective_path,'r')
-        pmap = np.array( pers_file['pmap'] )
         pers_file.close()
         
     mask = None
@@ -335,43 +332,26 @@ def main(argv):
     im_names = np.loadtxt(test_names_file, dtype='str')
 
     # Perform test
-    # ntrueall=[]
     npredall=[]
     
-    # Init GAME
-    # n_im = len( im_names )
-    # game_table = np.zeros( (n_im, mx_game) )
-
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
     
     print() 
     print("Start prediction ...")
     count = 0
-    # gt_vector = np.zeros((len(im_names)))
     pred_vector = np.zeros((len(im_names)))    
     
     for ix, name in enumerate(im_names):
         # Get image paths
         im_path = utl.extendName(name, im_folder)
-        dot_im_path = utl.extendName(name, im_folder, use_ending=True, pattern=dot_ending)
 
         # Read image files
         im = loadImage(im_path, color = is_colored)
-        # dot_im = loadImage(dot_im_path, color = True)
-
-        # Generate features
-        # if use_perspective:
-        #     dens_im = genPDensity(dot_im, sigmadots, pmap)
-        # else:
-        #     dens_im = genDensity(dot_im, sigmadots)
         
         if resize_im > 0:
             # Resize image
             im = utl.resizeMaxSize(im, resize_im)
-            # gt_sum = dens_im.sum()
-            # dens_im = utl.resizeMaxSize(dens_im, resize_im)
-            # dens_im = dens_im * gt_sum / dens_im.sum()
         
         # Get mask if needed
         if dataset != 'UCSD':
@@ -381,39 +361,17 @@ def main(argv):
                 mask = mask.get('BW')
         
         s=time.time()
-        # ntrue,npred,resImg,gtdots=testOnImg(CNN, im, dens_im, pw, mask)
         npred,resImg=testOnImg(CNN, im, pw, mask)
-        # print "image : %d , ntrue = %.2f ,npred = %.2f , time =%.2f sec"%(count,ntrue,npred,time.time()-s)
         print("image : %d, npred = %.2f , time =%.2f sec"%(count,npred,time.time()-s))
 
         # Keep individual predictions
-        # gt_vector[ix] = ntrue
         pred_vector[ix] = npred    
     
-        # Hold predictions and originasl
-        # ntrueall.append(ntrue)
+        # Hold predictions and originals
         npredall.append(npred)
-        
-        # Compute game metric
-        # for l in range(mx_game):
-        #     game_table[count, l] = gameMetric(resImg, gtdots, l)
     
         count = count +1
-            
-    # ntrueall=np.asarray(ntrueall)
-    npredall=np.asarray(npredall)
-    # print "done ! mean absolute error %.2f" % np.mean(np.abs(ntrueall-npredall))
 
-    # Print Game results
-    # results = np.zeros(mx_game)
-    # for l in range(mx_game):
-    #     results[l] = np.mean( game_table[:,l] )
-    #     print "GAME for level %d: %.2f " % (l, np.mean( game_table[:,l] ))
-    
-    # Dump results into a txt file
-    # np.savetxt(results_file + '_pred.txt', npredall)
-    # np.savetxt(results_file + '_gt.txt', ntrueall)
-    
     return 0
 
 if __name__=="__main__":
