@@ -1,19 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
-    @author: Daniel Oñoro Rubio
-    @organization: GRAM, University of Alcalá, Alcalá de Henares, Spain
-    @copyright: See LICENSE.txt
-    @contact: daniel.onoro@edu.uah.es
-    @date: 27/02/2015
-'''
-
-"""
-Test script. This code performs a test over with a pre trained model over the
-specified dataset.
-"""
-
 import getopt
 # System
 import signal
@@ -110,57 +97,7 @@ class CaffePredictor:
         dens_map = dens_map / count_map
         
         return dens_map
-        
-def gameRec(test, gt, cur_lvl, tar_lvl):
-    '''
-    @brief: Compute the game metric error. Recursive function.
-    @param test: test density.
-    @param gt: ground truth density.
-    @param cur_lvl: current game level.
-    @param tar_lvl: target game level.
-    @return game: return game metric.
-    '''
-        
-    # get sizes
-    dim = test.shape
-    
-    assert dim == gt.shape
-    
-    if cur_lvl == tar_lvl:
-        return np.abs( np.sum( test ) - np.sum( gt ) )
-    else:
 
-        # Creating the four slices
-        y_half = int( dim[0]/2 )
-        x_half = int( dim[1]/2 )
-        
-        dens_slice = []
-        dens_slice.append( test[ 0:y_half, 0:x_half ] )
-        dens_slice.append( test[ 0:y_half, x_half:dim[1] ] )
-        dens_slice.append( test[ y_half:dim[0], 0:x_half] )
-        dens_slice.append( test[ y_half:dim[0], x_half:dim[1] ] )
-
-        gt_slice = []
-        gt_slice.append( gt[ 0:y_half, 0:x_half ] )
-        gt_slice.append( gt[ 0:y_half, x_half:dim[1] ] )
-        gt_slice.append( gt[ y_half:dim[0], 0:x_half] )
-        gt_slice.append( gt[ y_half:dim[0], x_half:dim[1] ] )
-
-        res = np.zeros(4)
-        for a in range(4):
-            res[a] = gameRec(dens_slice[a], gt_slice[a], cur_lvl + 1, tar_lvl)
-    
-        return np.sum(res);      
-
-'''
-    @brief: Compute the game metric error.
-    @param test: test density.
-    @param gt: ground truth density.
-    @param lvl: game level. lvl = 0 -> mean absolute error.
-    @return game: return game metric.
-'''
-def gameMetric(test, gt, lvl):
-    return gameRec(test, gt, 0, lvl)        
 
 #===========================================================================
 # Some helpers functions
@@ -228,17 +165,6 @@ def initTestFromCfg(cfg_file):
             use_perspective, is_colored, results_file, resize_im)
 
 
-def dispHelp():
-    print("======================================================")
-    print("                       Usage")
-    print("======================================================")
-    print("\t-h display this message")
-    print("\t--cpu_only")
-    print("\t--tdev <GPU ID>")
-    print("\t--prototxt <caffe prototxt file>")
-    print("\t--caffemodel <caffe caffemodel file>")
-    print("\t--cfg <config file yaml>")
-
 def main(argv, image_name):
     # Init parameters
     use_cpu = False
@@ -258,14 +184,10 @@ def main(argv, image_name):
                                              "cpu_only", "dev=", "cfg="])
     except getopt.GetoptError as err:
         print("Error while parsing parameters: ", err)
-        dispHelp(argv[0])
         return
     
     for opt, arg in opts:
-        if opt == '-h':
-            dispHelp(argv[0])
-            return
-        elif opt in ("--prototxt"):
+        if opt in ("--prototxt"):
             prototxt_path = arg
         elif opt in ("--caffemodel"):
             caffemodel_path = arg
@@ -320,10 +242,6 @@ def main(argv, image_name):
         pers_file = h5py.File(perspective_path,'r')
         pers_file.close()
         
-    mask = None
-
-    print("Reading image file names:")
-    im_names = np.loadtxt(test_names_file, dtype='str')
 
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
@@ -342,6 +260,7 @@ def main(argv, image_name):
         im = utl.resizeMaxSize(im, resize_im)
 
     # Get mask if needed
+    mask = None
     if use_mask:
         mask_im_path = utl.extendName(image_name, im_folder, use_ending=True, pattern=mask_file)
         mask = sio.loadmat(mask_im_path, chars_as_strings=1, matlab_compatible=1)

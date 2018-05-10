@@ -33,7 +33,7 @@ def count_cars(camera_name, url):
         path_to_save_location = "data/A5-webcams/images/{}.jpg".format(camera_name)
         retrieve_image(url, path_to_save_location)
         print("{} saved".format(camera_name))
-
+        test.main(sys.argv[1:], camera_name + ".jpg")
 
 
 
