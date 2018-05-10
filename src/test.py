@@ -200,36 +200,31 @@ def main(argv, image_name):
         elif opt in ("--cfg"):
             cfg_file = arg
             
-    print("Loading configuration file: ", cfg_file)
-    (dataset, use_mask, mask_file, test_names_file, im_folder, 
+    (dataset, use_mask, mask_file, test_names_file, im_folder,
             dot_ending, pw, sigmadots, n_scales, perspective_path, 
             use_perspective, is_colored, results_file, resize_im) = initTestFromCfg(cfg_file)
             
-    print("Choosen parameters:")
-    print("-------------------")
-    print("Use only CPU: ", use_cpu)
-    print("GPU devide: ", gpu_dev)
-    print("Dataset: ", dataset)
-    print("Results files: ", results_file)
-    print("Test data base location: ", im_folder)
-    print("Test inmage names: ", test_names_file)
-    print("Dot image ending: ", dot_ending)
-    print("Use mask: ", use_mask)
-    print("Mask pattern: ", mask_file)
-    print("Patch width (pw): ", pw)
-    print("Sigma for each dot: ", sigmadots)
-    print("Number of scales: ", n_scales)
-    print("Perspective map: ", perspective_path)
-    print("Use perspective:", use_perspective)
-    print("Prototxt path: ", prototxt_path)
-    print("Caffemodel path: ", caffemodel_path)
-    print("Batch size: ", b_size)
-    print("Resize images: ", resize_im)
-    print("===================")
-    
-    print("----------------------")
-    print("Preparing for Testing")
-    print("======================")
+    # print("Choosen parameters:")
+    # print("-------------------")
+    # print("Use only CPU: ", use_cpu)
+    # print("GPU devide: ", gpu_dev)
+    # print("Dataset: ", dataset)
+    # print("Results files: ", results_file)
+    # print("Test data base location: ", im_folder)
+    # print("Test inmage names: ", test_names_file)
+    # print("Dot image ending: ", dot_ending)
+    # print("Use mask: ", use_mask)
+    # print("Mask pattern: ", mask_file)
+    # print("Patch width (pw): ", pw)
+    # print("Sigma for each dot: ", sigmadots)
+    # print("Number of scales: ", n_scales)
+    # print("Perspective map: ", perspective_path)
+    # print("Use perspective:", use_perspective)
+    # print("Prototxt path: ", prototxt_path)
+    # print("Caffemodel path: ", caffemodel_path)
+    # print("Batch size: ", b_size)
+    # print("Resize images: ", resize_im)
+    # print("===================")
 
     # Set GPU CPU setting
     if use_cpu:
@@ -246,8 +241,7 @@ def main(argv, image_name):
     # Init CNN
     CNN = CaffePredictor(prototxt_path, caffemodel_path, n_scales)
 
-    print() 
-    print("Start prediction ...")
+    print("\nStart prediction for " + image_name)
 
     # Get image paths
     im_path = utl.extendName(image_name, im_folder)
