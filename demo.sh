@@ -17,8 +17,11 @@ echo Logging output to "$LOG"
 T="$(date +%s)"
 
 # Test Net
-python3 src/server.py --dev ${GPU_DEV} --prototxt ${DEPLOY} --caffemodel ${CAFFE_MODEL} --cfg ${CONFIG_FILE}
+#python3 src/server.py --dev ${GPU_DEV} --prototxt ${DEPLOY} --caffemodel ${CAFFE_MODEL} --cfg ${CONFIG_FILE}
+python3 src/server.py --cpu_only --dev ${GPU_DEV} --prototxt ${DEPLOY} --caffemodel ${CAFFE_MODEL} --cfg ${CONFIG_FILE}
+
 #python3 src/test.py --dev ${GPU_DEV} --prototxt ${DEPLOY} --caffemodel ${CAFFE_MODEL} --cfg ${CONFIG_FILE}
+#python3 src/test.py --cpu_only --dev ${GPU_DEV} --prototxt ${DEPLOY} --caffemodel ${CAFFE_MODEL} --cfg ${CONFIG_FILE}
 
 T="$(($(date +%s)-T))"
 echo "Time in seconds: ${T}"
