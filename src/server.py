@@ -14,6 +14,15 @@ cameras = [
     ("Ettlingen-B", "https://www.svz-bw.de/kamera/ftpdata/KA062/KA062_gross.jpg?1525809551"),
 ]
 
+camera_max_cars = {
+    "Karlsruhe-Nord-A": 100,
+    "Karlsruhe-Nord-B": 100,
+    "Karlsruhe-Mitte-A": 100,
+    "Karlsruhe-Mitte-B": 100,
+    "Ettlingen-A": 100,
+    "Ettlingen-B": 100,
+}
+
 
 def retrieve_image(url, path_to_save_location):
     opener = urllib.request.build_opener()
