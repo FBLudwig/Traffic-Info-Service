@@ -25,19 +25,15 @@ def retrieve_image(url, path_to_save_location):
 def start_json_server():
     print("Starting jsonserver")
     jsonserver.start(predictions)
-    print("finished jsonserver")
 
 
 def count_cars(camera_name, url, predictions):
     while True:
         path_to_save_location = "data/A5-webcams/images/{}.jpg".format(camera_name)
         retrieve_image(url, path_to_save_location)
-        print("{} saved".format(camera_name))
         prediction = test.main(sys.argv[1:], camera_name + ".jpg")
-        print("{} | Prediction: {} cars".format(camera_name, prediction))
         predictions[camera_name] = prediction
         print(predictions)
-
 
 
 if __name__ == '__main__':
@@ -50,7 +46,7 @@ if __name__ == '__main__':
             process = Process(target=count_cars, args=(camera_name, url, predictions))
             process.start()
 
-        print("Processes started")
+        print("CCNN-processes started")
 
         server_process = Process(target=start_json_server)
         server_process.start()

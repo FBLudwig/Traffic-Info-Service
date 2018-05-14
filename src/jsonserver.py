@@ -8,15 +8,15 @@ def json_response():
     ka_mitte = ""
     ettlingen = ""
     try:
-        ka_nord = predictions["Karlsruhe-Nord-A"]
-        ka_mitte = predictions["Karlsruhe-Mitte-A"]
-        ettlingen = predictions["Ettlingen-A"]
+        ka_nord = int((predictions["Karlsruhe-Nord-A"] + predictions["Karlsruhe-Nord-B"]) / 2)
+        ka_mitte = int((predictions["Karlsruhe-Mitte-A"] + predictions["Karlsruhe-Mitte-B"]) / 2)
+        ettlingen = int((predictions["Ettlingen-A"] + predictions["Ettlingen-B"]) / 2)
     except:
-        print("Exception - Wert nicht in predictions")
+        print("Value not in predictions")
     return { "Karlsruhe Nord": ka_nord, "Karlsruhe Mitte": ka_mitte, "Ettlingen": ettlingen}
 
 
 def start(pred):
     global predictions
     predictions = pred
-    run(host='0.0.0.0', port=8079)
+    run(host='0.0.0.0', port=8079, server='cherrypy')
