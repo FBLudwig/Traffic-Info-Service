@@ -32,7 +32,8 @@ class CaffePredictor:
             scale_name = 'data_s{}'.format(s)
             self.net.blobs[scale_name].reshape(b_shape[0],b_shape[1],b_shape[2],b_shape[3])
 
-    # Probably it is not the eficient way to do it...
+
+
     def process(self, im, base_pw):
         # Compute dense positions where to extract patches
         [heith, width] = im.shape[0:2]
@@ -90,10 +91,7 @@ class CaffePredictor:
         return dens_map
 
 
-#===========================================================================
-# Some helpers functions
-#===========================================================================
-# def testOnImg(CNN, im, gtdots, pw, mask = None):
+
 def testOnImg(CNN, im, pw, mask = None):
     
     # Process Image
@@ -102,19 +100,14 @@ def testOnImg(CNN, im, pw, mask = None):
     # Mask image if provided
     if mask is not None:
         resImg = resImg * mask
-        # gtdots = gtdots * mask
 
     npred=resImg.sum()
-    # ntrue=gtdots.sum()
 
-    # return ntrue,npred,resImg,gtdots
     return npred,resImg
 
+
+
 def initTestFromCfg(cfg_file):
-    '''
-    @brief: initialize all parameter from the cfg file. 
-    '''
-    
     # Load cfg parameter from yaml file
     cfg = utl.cfgFromFile(cfg_file)
     
@@ -168,6 +161,7 @@ def loadImage(filename, color=True):
     return img
 
 
+
 def extractEscales(lim, n_scales):
     out_list = []
     for im in lim:
@@ -184,6 +178,7 @@ def extractEscales(lim, n_scales):
         out_list.append(scaled_im_list)
 
     return out_list
+
 
 
 def main(argv, image_name):
@@ -264,4 +259,4 @@ def main(argv, image_name):
     return npred
 
 if __name__=="__main__":
-    main(sys.argv[1:], "Karlsruhe-Nord-B.jpg")
+    main(sys.argv[1:], "Karlsruhe-Nord-B.jpg")  # For quick testing
