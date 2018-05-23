@@ -2,8 +2,8 @@ import sys
 import urllib
 from multiprocessing import Process, Manager
 
-import jsonserver
-import test
+import webserver
+import ccnn
 
 # URLs of the relevant cameras
 cameras = [
@@ -35,7 +35,7 @@ def retrieve_image(url, path_to_save_location):
 
 def start_json_server():
     print("Starting jsonserver")
-    jsonserver.start(predictions)
+    webserver.start(predictions)
 
 
 def count_cars(camera_name, url, predictions):
@@ -44,7 +44,7 @@ def count_cars(camera_name, url, predictions):
         path_to_save_location = "data/A5-webcams/images/{}.jpg".format(camera_name)
         retrieve_image(url, path_to_save_location)
 
-        prediction = test.main(sys.argv[1:], camera_name + ".jpg")
+        prediction = ccnn.main(sys.argv[1:], camera_name + ".jpg")
         predictions[camera_name] = prediction  # Variable shared between processes
         print(predictions)
 
