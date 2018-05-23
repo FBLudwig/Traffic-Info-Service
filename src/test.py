@@ -30,7 +30,6 @@ class CaffePredictor:
             self.net.blobs[scale_name].reshape(b_shape[0],b_shape[1],b_shape[2],b_shape[3])
 
 
-
     def process(self, im, base_pw):
         # Compute dense positions where to extract patches
         [heith, width] = im.shape[0:2]
@@ -83,7 +82,6 @@ class CaffePredictor:
         return dens_map
 
 
-
 def count_objects(CNN, im, pw, mask = None):
     
     resImg = CNN.process(im, pw)
@@ -94,7 +92,6 @@ def count_objects(CNN, im, pw, mask = None):
     npred=resImg.sum()
 
     return npred,resImg
-
 
 
 def init_parameters_from_config(cfg_file):
@@ -120,7 +117,6 @@ def init_parameters_from_config(cfg_file):
             use_perspective, is_colored, results_file, resize_im)
 
 
-
 def load_image(filename, color=True):
     img = skimage.img_as_float(skimage.io.imread(filename, as_grey=not color)).astype(np.float32)
     if img.ndim == 2:
@@ -130,7 +126,6 @@ def load_image(filename, color=True):
     elif img.shape[2] == 4:
         img = img[:, :, :3]
     return img
-
 
 
 def extract_n_scales(lim, n_scales):
@@ -151,15 +146,12 @@ def extract_n_scales(lim, n_scales):
     return out_list
 
 
-
 def main(argv, image_name):
     use_cpu = False
     gpu_dev = 0
     prototxt_path = 'models/trancos/hydra2/hydra_deploy.prototxt'
     caffemodel_path = 'models/trancos/hydra2/trancos_hydra2.caffemodel'
         
-        
-    # Get parameters
     try:
         opts, _ = getopt.getopt(argv, "h:", ["prototxt=", "caffemodel=", 
                                              "cpu_only", "dev=", "cfg="])
@@ -195,7 +187,6 @@ def main(argv, image_name):
 
     print("\nStart prediction for " + image_name)
 
-    # Read image file
     im_path = utl.extendName(image_name, im_folder)
     im = load_image(im_path, color = is_colored)
 

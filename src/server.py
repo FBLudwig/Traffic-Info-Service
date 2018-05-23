@@ -5,6 +5,7 @@ from multiprocessing import Process, Manager
 import jsonserver
 import test
 
+# URLs of the relevant cameras
 cameras = [
     ("Karlsruhe-Nord-A", "https://www.svz-bw.de/kamera/ftpdata/KA031/KA031_gross.jpg?1525809142"),
     ("Karlsruhe-Nord-B", "https://www.svz-bw.de/kamera/ftpdata/KA032/KA032_gross.jpg?1525809471"),
@@ -14,6 +15,7 @@ cameras = [
     ("Ettlingen-B", "https://www.svz-bw.de/kamera/ftpdata/KA062/KA062_gross.jpg?1525809551"),
 ]
 
+# Values that match 100% traffic density for the respective camera
 camera_max_cars = {
     "Karlsruhe-Nord-A": 100,
     "Karlsruhe-Nord-B": 100,
@@ -38,17 +40,20 @@ def start_json_server():
 
 def count_cars(camera_name, url, predictions):
     while True:
+        # Download image
         path_to_save_location = "data/A5-webcams/images/{}.jpg".format(camera_name)
         retrieve_image(url, path_to_save_location)
+
         prediction = test.main(sys.argv[1:], camera_name + ".jpg")
-        predictions[camera_name] = prediction
+        predictions[camera_name] = prediction  # Variable shared between processes
         print(predictions)
 
 
 if __name__ == '__main__':
     with Manager() as manager:
-        predictions = manager.dict()
+        predictions = manager.dict()  # Variable shared between processes
 
+        # Start a new process for each camera
         for camera in cameras:
             camera_name = camera[0]
             url = camera[1]
