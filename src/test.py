@@ -1,33 +1,22 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import getopt
-# System
 import os
 import signal
+import skimage
+from skimage.transform import resize
 import sys
 
-# ===========================================================================
-# Dependency loading
-# ===========================================================================
-# File storage
 import h5py
 import scipy.io as sio
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 import time
 
-# Vision and maths
 import numpy as np
 import utils as utl
-from gen_features import loadImage, extractEscales
 os.environ['GLOG_minloglevel'] = '2'    # Supress most of caffe's log output
 import caffe
 
 
-#===========================================================================
-# Code 
-#===========================================================================
 class CaffePredictor:
     def __init__(self, prototxt, caffemodel, n_scales):       
         # Load a precomputed caffe model
@@ -167,6 +156,36 @@ def initTestFromCfg(cfg_file):
             use_perspective, is_colored, results_file, resize_im)
 
 
+
+def loadImage(filename, color=True):
+    img = skimage.img_as_float(skimage.io.imread(filename, as_grey=not color)).astype(np.float32)
+    if img.ndim == 2:
+        img = img[:, :, np.newaxis]
+        if color:
+            img = np.tile(img, (1, 1, 3))
+    elif img.shape[2] == 4:
+        img = img[:, :, :3]
+    return img
+
+
+def extractEscales(lim, n_scales):
+    out_list = []
+    for im in lim:
+        ph, pw = im.shape[0:2]  # get patch width and height
+        scaled_im_list = []
+        for s in range(n_scales):
+            ch = s * ph // (2 * n_scales)
+            cw = s * pw // (2 * n_scales)
+
+            crop_im = im[ch:ph - ch, cw:pw - cw]
+
+            scaled_im_list.append(resize(crop_im, (ph, pw)))
+
+        out_list.append(scaled_im_list)
+
+    return out_list
+
+
 def main(argv, image_name):
     # Init parameters
     use_cpu = False
@@ -203,28 +222,6 @@ def main(argv, image_name):
     (dataset, use_mask, mask_file, test_names_file, im_folder,
             dot_ending, pw, sigmadots, n_scales, perspective_path, 
             use_perspective, is_colored, results_file, resize_im) = initTestFromCfg(cfg_file)
-            
-    # print("Choosen parameters:")
-    # print("-------------------")
-    # print("Use only CPU: ", use_cpu)
-    # print("GPU devide: ", gpu_dev)
-    # print("Dataset: ", dataset)
-    # print("Results files: ", results_file)
-    # print("Test data base location: ", im_folder)
-    # print("Test inmage names: ", test_names_file)
-    # print("Dot image ending: ", dot_ending)
-    # print("Use mask: ", use_mask)
-    # print("Mask pattern: ", mask_file)
-    # print("Patch width (pw): ", pw)
-    # print("Sigma for each dot: ", sigmadots)
-    # print("Number of scales: ", n_scales)
-    # print("Perspective map: ", perspective_path)
-    # print("Use perspective:", use_perspective)
-    # print("Prototxt path: ", prototxt_path)
-    # print("Caffemodel path: ", caffemodel_path)
-    # print("Batch size: ", b_size)
-    # print("Resize images: ", resize_im)
-    # print("===================")
 
     # Set GPU CPU setting
     if use_cpu:
@@ -267,4 +264,4 @@ def main(argv, image_name):
     return npred
 
 if __name__=="__main__":
-    main(sys.argv[1:], "Ettlingen-A.jpg")
+    main(sys.argv[1:], "Karlsruhe-Nord-B.jpg")
