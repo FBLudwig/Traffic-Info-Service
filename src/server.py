@@ -17,12 +17,12 @@ cameras = [
 
 # Number of cars that are defined as 100% traffic density for the respective camera
 camera_max_cars = {
-    "Karlsruhe-Nord-A": 30,
-    "Karlsruhe-Nord-B": 33,
-    "Karlsruhe-Mitte-A": 23,
-    "Karlsruhe-Mitte-B": 31,
-    "Ettlingen-A": 27,
-    "Ettlingen-B": 26,
+    "Karlsruhe-Nord-A": 33,
+    "Karlsruhe-Nord-B": 36,
+    "Karlsruhe-Mitte-A": 28,
+    "Karlsruhe-Mitte-B": 36,
+    "Ettlingen-A": 30,
+    "Ettlingen-B": 29,
 }
 
 
