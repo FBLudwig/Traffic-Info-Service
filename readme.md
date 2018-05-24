@@ -11,7 +11,7 @@ WITH_PYTHON_LAYER := 1
 
 #### Python 3 Modules
 - bottle
-- CherryPy
+- CherryPy | version 8.9.1
 - urllib3
 - scipy
 - scikit-image
